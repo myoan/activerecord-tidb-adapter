@@ -7,7 +7,7 @@ module ActiveRecord
         attr_reader :clustered
 
         def initialize(conn, name, charset: nil, collation: nil, clustered: nil, **)
-          @clustered = clustered || false
+          @clustered = clustered
           super(conn, name, charset: charset, collation: collation)
         end
 

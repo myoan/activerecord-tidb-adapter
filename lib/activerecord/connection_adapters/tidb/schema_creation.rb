@@ -7,10 +7,13 @@ module ActiveRecord
             sql = "PRIMARY KEY"
             sql << " (#{o.name.map { |name| quote_column_name(name) }.join(', ')})"
             sql <<
-              if o.clustered
+              case o.clustered
+              when true
                 " CLUSTERED"
-              else
+              when false
                 " NONCLUSTERED"
+              else
+                ""
               end
             sql
           end
@@ -19,10 +22,13 @@ module ActiveRecord
             sql = super(sql, options)
             if options[:primary_key] == true
               sql <<
-                if options[:clustered]
+                case options[:clustered]
+                when true
                   " CLUSTERED"
-                else
+                when false
                   " NONCLUSTERED"
+                else
+                  ""
                 end
             end
             sql
