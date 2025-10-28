@@ -52,15 +52,14 @@ development:
 
 ### Clustered Index in Migrations
 
-The adapter allows you to specify whether a primary key should be clustered or non-clustered:
+The adapter allows you to specify whether a primary key should be clustered or non-clustered using the `clustered` option:
 
-#### Single Column Primary Key with Clustered Index
+#### Clustered Index (Table-Level Option)
 
 ```ruby
 class CreateUsers < ActiveRecord::Migration[7.2]
   def change
-    create_table :users, primary_key: [:id, clustered: true] do |t|
-      t.bigint :id, null: false
+    create_table :users, clustered: true do |t|
       t.string :name
       t.string :email
       t.timestamps
@@ -73,7 +72,7 @@ This generates:
 
 ```sql
 CREATE TABLE `users` (
-  `id` bigint NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`) CLUSTERED
@@ -85,8 +84,7 @@ CREATE TABLE `users` (
 ```ruby
 class CreateProducts < ActiveRecord::Migration[7.2]
   def change
-    create_table :products, primary_key: [:id, clustered: false] do |t|
-      t.bigint :id, null: false
+    create_table :products, clustered: false do |t|
       t.string :name
       t.decimal :price
       t.timestamps
@@ -99,11 +97,27 @@ This generates:
 
 ```sql
 CREATE TABLE `products` (
-  `id` bigint NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `price` decimal(10,0) DEFAULT NULL,
   PRIMARY KEY (`id`) NONCLUSTERED
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+```
+
+#### Column-Level Clustered Option
+
+You can also specify the `clustered` option at the column level for more control:
+
+```ruby
+class CreateOrders < ActiveRecord::Migration[7.2]
+  def change
+    create_table :orders do |t|
+      t.bigint :id, primary_key: true, clustered: true, null: false
+      t.integer :order_number
+      t.timestamps
+    end
+  end
+end
 ```
 
 ### Composite Primary Keys
@@ -111,12 +125,15 @@ CREATE TABLE `products` (
 ```ruby
 class CreateOrderItems < ActiveRecord::Migration[7.2]
   def change
-    create_table :order_items, primary_key: [:order_id, :product_id, clustered: true] do |t|
+    create_table :order_items, clustered: true do |t|
       t.bigint :order_id, null: false
       t.bigint :product_id, null: false
       t.integer :quantity
       t.timestamps
     end
+
+    # Define composite primary key separately if needed
+    execute "ALTER TABLE order_items ADD PRIMARY KEY (order_id, product_id) CLUSTERED"
   end
 end
 ```
