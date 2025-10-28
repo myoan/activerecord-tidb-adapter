@@ -14,6 +14,19 @@ module ActiveRecord
               end
             sql
           end
+
+          def add_column_options!(sql, options)
+            sql = super(sql, options)
+            if options[:primary_key] == true
+              sql <<
+                if options[:clustered]
+                  " CLUSTERED"
+                else
+                  " NONCLUSTERED"
+                end
+            end
+            sql
+          end
       end
     end
   end
