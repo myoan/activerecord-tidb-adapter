@@ -66,7 +66,7 @@ class Activerecord::Tidb::AdapterTest < Minitest::Test
     migrate(SingleKeyNonclustered)
 
     result = connection.execute("SHOW CREATE TABLE users")
-    table_name, query = result.first
+    _, query = result.first
     expected_query = <<~QUERY.strip
       CREATE TABLE `users` (
         `id` bigint NOT NULL AUTO_INCREMENT,
@@ -81,7 +81,7 @@ class Activerecord::Tidb::AdapterTest < Minitest::Test
     migrate(SingleKeyClustered)
 
     result = connection.execute("SHOW CREATE TABLE users")
-    table_name, query = result.first
+    _, query = result.first
     expected_query = <<~QUERY.strip
       CREATE TABLE `users` (
         `id` bigint NOT NULL AUTO_INCREMENT,
@@ -96,7 +96,7 @@ class Activerecord::Tidb::AdapterTest < Minitest::Test
     migrate(SingleKeyWithoutConfig)
 
     result = connection.execute("SHOW CREATE TABLE users")
-    table_name, query = result.first
+    _, query = result.first
     expected_query = <<~QUERY.strip
       CREATE TABLE `users` (
         `id` bigint NOT NULL AUTO_INCREMENT,
@@ -111,7 +111,7 @@ class Activerecord::Tidb::AdapterTest < Minitest::Test
     migrate(MultiKeyNonclustered)
 
     result = connection.execute("SHOW CREATE TABLE users")
-    table_name, query = result.first
+    _, query = result.first
     expected_query = <<~QUERY.strip
       CREATE TABLE `users` (
         `id` bigint NOT NULL,
@@ -126,7 +126,7 @@ class Activerecord::Tidb::AdapterTest < Minitest::Test
     migrate(MultiKeyClustered)
 
     result = connection.execute("SHOW CREATE TABLE users")
-    table_name, query = result.first
+    _, query = result.first
     expected_query = <<~QUERY.strip
       CREATE TABLE `users` (
         `id` bigint NOT NULL,
@@ -141,7 +141,7 @@ class Activerecord::Tidb::AdapterTest < Minitest::Test
     migrate(MultiKeyWithoutConfig)
 
     result = connection.execute("SHOW CREATE TABLE users")
-    table_name, query = result.first
+    _, query = result.first
     expected_query = <<~QUERY.strip
       CREATE TABLE `users` (
         `id` bigint NOT NULL,
