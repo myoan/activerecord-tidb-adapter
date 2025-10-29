@@ -7,6 +7,9 @@ module ActiveRecord
             if o.shard_row_id_bits
               create_sql << " SHARD_ROW_ID_BITS = #{o.shard_row_id_bits}"
             end
+            if o.pre_split_regions
+              create_sql << " PRE_SPLIT_REGIONS = #{o.pre_split_regions}"
+            end
           end
 
           def visit_PrimaryKeyDefinition(o)

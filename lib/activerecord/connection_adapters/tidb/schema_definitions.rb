@@ -4,11 +4,12 @@ module ActiveRecord
       PrimaryKeyDefinition = Struct.new(:name, :clustered) # :nodoc:
 
       class TableDefinition < MySQL::TableDefinition
-        attr_reader :clustered, :shard_row_id_bits
+        attr_reader :clustered, :shard_row_id_bits, :pre_split_regions
 
-        def initialize(conn, name, charset: nil, collation: nil, clustered: nil, shard_row_id_bits: nil, **)
+        def initialize(conn, name, charset: nil, collation: nil, clustered: nil, shard_row_id_bits: nil, pre_split_regions: nil, **)
           @clustered = clustered
           @shard_row_id_bits = shard_row_id_bits
+          @pre_split_regions = pre_split_regions
           super(conn, name, charset: charset, collation: collation)
         end
 
@@ -39,12 +40,15 @@ module ActiveRecord
           if @shard_row_id_bits
             options[:shard_row_id_bits] = @shard_row_id_bits
           end
+          if @pre_split_regions
+            options[:pre_split_regions] = @pre_split_regions
+          end
           super(name, type, **options)
         end
 
         private
           def valid_column_definition_options
-            super + [:clustered, :shard_row_id_bits]
+            super + [:clustered, :shard_row_id_bits, :pre_split_regions]
           end
       end
     end

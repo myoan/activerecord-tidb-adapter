@@ -11,7 +11,7 @@ module ActiveRecord
         end
 
         def valid_table_definition_options # :nodoc:
-          super + [:clustered, :shard_row_id_bits]
+          super + [:clustered, :shard_row_id_bits, :pre_split_regions]
         end
       end
     end
