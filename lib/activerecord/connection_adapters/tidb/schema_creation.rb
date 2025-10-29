@@ -3,6 +3,12 @@ module ActiveRecord
     module TiDB
       class SchemaCreation < MySQL::SchemaCreation
         private
+          def add_table_options!(create_sql, o)
+            if o.shard_row_id_bits
+              create_sql << " SHARD_ROW_ID_BITS = #{o.shard_row_id_bits}"
+            end
+          end
+
           def visit_PrimaryKeyDefinition(o)
             sql = "PRIMARY KEY"
             sql << " (#{o.name.map { |name| quote_column_name(name) }.join(', ')})"
