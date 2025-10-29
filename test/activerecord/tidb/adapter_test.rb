@@ -1,5 +1,14 @@
 require "test_helper"
 
+class SetInColumn < ActiveRecord::Migration[7.2]
+  def change
+    create_table :users, id: false do |t|
+      t.bigint :id, primary_key: true, clustered: false, null: false
+      t.string "name"
+    end
+  end
+end
+
 class SingleKeyNonclustered < ActiveRecord::Migration[7.2]
   def change
     create_table :users, clustered: false do |t|
@@ -60,6 +69,21 @@ class Activerecord::Tidb::AdapterTest < Minitest::Test
 
   def teardown
     connection.drop_table :users if connection.table_exists?(:users)
+  end
+
+  def test_set_in_column
+    migrate(SetInColumn)
+
+    result = connection.execute("SHOW CREATE TABLE users")
+    _, query = result.first
+    expected_query = <<~QUERY.strip
+      CREATE TABLE `users` (
+        `id` bigint NOT NULL AUTO_INCREMENT,
+        `name` varchar(255) DEFAULT NULL,
+        PRIMARY KEY (`id`) /*T![clustered_index] NONCLUSTERED */
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin
+    QUERY
+    assert_equal expected_query, query
   end
 
   def test_single_key_nonclustered
