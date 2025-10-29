@@ -4,6 +4,9 @@ module ActiveRecord
       class SchemaCreation < MySQL::SchemaCreation
         private
           def add_table_options!(create_sql, o)
+            if o.auto_id_cache
+              create_sql << " AUTO_ID_CACHE #{o.auto_id_cache}"
+            end
             if o.shard_row_id_bits
               create_sql << " SHARD_ROW_ID_BITS = #{o.shard_row_id_bits}"
             end
